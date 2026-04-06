@@ -100,6 +100,21 @@ const showingNavigationDropdown = ref(false);
                                         Customers
                                     </NavLink>
                                 </li>
+                                <li>
+                                    <NavLink
+                                        :href="route('settings.payments')"
+                                        :active="route().current('settings.payments*')"
+                                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                        :class="route().current('settings.payments*')
+                                            ? 'bg-[#D4A853] text-[#1a1a2e]'
+                                            : 'text-[#f5f0e8] hover:text-[#D4A853] hover:bg-[#16162a]'"
+                                    >
+                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                                        </svg>
+                                        Payments
+                                    </NavLink>
+                                </li>
                             </ul>
                         </li>
                     </ul>

@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Shop;
 use App\Models\Staff;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -400,5 +401,238 @@ class AppRoutesTest extends TestCase
             'name' => 'Updated Name',
             'email' => 'updated@test.com',
         ])->assertRedirect('/profile');
+    }
+
+    // Public pages
+    public function test_features_page_loads(): void
+    {
+        $this->get('/features')->assertStatus(200);
+    }
+
+    public function test_pricing_page_loads(): void
+    {
+        $this->get('/pricing')->assertStatus(200);
+    }
+
+    public function test_about_page_loads(): void
+    {
+        $this->get('/about')->assertStatus(200);
+    }
+
+    public function test_contact_page_loads(): void
+    {
+        $this->get('/contact')->assertStatus(200);
+    }
+
+    public function test_privacy_page_loads(): void
+    {
+        $this->get('/privacy')->assertStatus(200);
+    }
+
+    public function test_terms_page_loads(): void
+    {
+        $this->get('/terms')->assertStatus(200);
+    }
+
+    // Payment Settings
+    public function test_payment_settings_page_loads(): void
+    {
+        $this->actingAs($this->user)->get('/settings/payments')->assertStatus(200);
+    }
+
+    public function test_payment_settings_redirects_unauthenticated(): void
+    {
+        $this->get('/settings/payments')->assertRedirect('/login');
+    }
+
+    public function test_update_stripe_settings(): void
+    {
+        $this->actingAs($this->user)->post('/settings/payments/stripe', [
+            'stripe_account_id' => 'acct_test123',
+            'stripe_enabled' => true,
+        ])->assertRedirect('/settings/payments');
+    }
+
+    public function test_update_paypal_settings(): void
+    {
+        $this->actingAs($this->user)->post('/settings/payments/paypal', [
+            'paypal_email' => 'pay@example.com',
+            'paypal_client_id' => 'client_123',
+            'paypal_enabled' => true,
+        ])->assertRedirect('/settings/payments');
+    }
+
+    public function test_update_payment_methods(): void
+    {
+        $this->actingAs($this->user)->post('/settings/payments/methods', [
+            'payment_methods' => ['cash', 'card'],
+        ])->assertRedirect('/settings/payments');
+    }
+
+    public function test_update_stripe_settings_validation(): void
+    {
+        $this->actingAs($this->user)->post('/settings/payments/stripe', [
+            'stripe_enabled' => 'not-a-bool',
+        ])->assertSessionHasErrors('stripe_enabled');
+    }
+
+    public function test_update_paypal_settings_validation(): void
+    {
+        $this->actingAs($this->user)->post('/settings/payments/paypal', [
+            'paypal_email' => 'not-an-email',
+            'paypal_enabled' => true,
+        ])->assertSessionHasErrors('paypal_email');
+    }
+
+    // Checkout
+    public function test_checkout_page_loads(): void
+    {
+        $this->actingAs($this->user)->get('/checkout?plan=starter&billing=monthly')->assertStatus(200);
+    }
+
+    public function test_checkout_redirects_unauthenticated(): void
+    {
+        $this->get('/checkout')->assertRedirect('/login');
+    }
+
+    public function test_checkout_with_invalid_plan_defaults(): void
+    {
+        $this->actingAs($this->user)->get('/checkout?plan=invalid')->assertStatus(200);
+    }
+
+    public function test_checkout_with_annual_billing(): void
+    {
+        $this->actingAs($this->user)->get('/checkout?plan=professional&billing=annual')->assertStatus(200);
+    }
+
+    // Stripe checkout (will fail without Stripe key, but should return error gracefully)
+    public function test_create_stripe_session_without_key(): void
+    {
+        $this->actingAs($this->user)->post('/checkout/stripe', [
+            'plan' => 'starter',
+            'billing' => 'monthly',
+        ])->assertSessionHasErrors('stripe');
+    }
+
+    public function test_create_stripe_session_validation(): void
+    {
+        $this->actingAs($this->user)->post('/checkout/stripe', [])
+            ->assertSessionHasErrors(['plan', 'billing']);
+    }
+
+    // PayPal
+    public function test_create_paypal_order(): void
+    {
+        $response = $this->actingAs($this->user)->postJson('/checkout/paypal/create', [
+            'plan' => 'starter',
+            'billing' => 'monthly',
+        ]);
+
+        $response->assertStatus(200)->assertJsonStructure(['subscription_id', 'amount', 'description']);
+    }
+
+    public function test_create_paypal_order_validation(): void
+    {
+        $this->actingAs($this->user)->postJson('/checkout/paypal/create', [])
+            ->assertStatus(422);
+    }
+
+    public function test_capture_paypal_order(): void
+    {
+        $subscription = Subscription::create([
+            'user_id' => $this->user->id,
+            'plan' => 'starter',
+            'billing_cycle' => 'monthly',
+            'price' => 4900,
+            'status' => 'pending',
+            'payment_provider' => 'paypal',
+        ]);
+
+        $this->actingAs($this->user)->postJson('/checkout/paypal/capture', [
+            'subscription_id' => $subscription->id,
+            'paypal_order_id' => 'PAYPAL-123',
+        ])->assertStatus(200)->assertJson(['status' => 'captured']);
+
+        $this->assertDatabaseHas('subscriptions', [
+            'id' => $subscription->id,
+            'status' => 'active',
+            'paypal_order_id' => 'PAYPAL-123',
+        ]);
+    }
+
+    // Payment Success
+    public function test_payment_success_page_loads(): void
+    {
+        $this->actingAs($this->user)->get('/subscription/success?plan=starter')->assertStatus(200);
+    }
+
+    // Webhooks
+    public function test_subscription_webhook_valid_event(): void
+    {
+        $subscription = Subscription::create([
+            'user_id' => $this->user->id,
+            'plan' => 'starter',
+            'billing_cycle' => 'monthly',
+            'price' => 4900,
+            'status' => 'pending',
+            'payment_provider' => 'stripe',
+            'stripe_session_id' => 'cs_test_123',
+        ]);
+
+        $this->postJson('/webhook/stripe', [
+            'type' => 'checkout.session.completed',
+            'data' => ['object' => ['id' => 'cs_test_123', 'subscription' => 'sub_123']],
+        ])->assertStatus(200);
+
+        $this->assertDatabaseHas('subscriptions', [
+            'id' => $subscription->id,
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_subscription_webhook_invalid_payload(): void
+    {
+        $this->postJson('/webhook/stripe', [])->assertStatus(400);
+    }
+
+    public function test_appointment_payment_webhook(): void
+    {
+        $this->appointment->update(['payment_intent_id' => 'pi_test_123']);
+
+        $this->postJson('/webhook/stripe/appointments', [
+            'type' => 'payment_intent.succeeded',
+            'data' => ['object' => ['id' => 'pi_test_123']],
+        ])->assertStatus(200);
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $this->appointment->id,
+            'payment_status' => 'paid',
+        ]);
+    }
+
+    // Appointment payments
+    public function test_appointment_pay(): void
+    {
+        $this->actingAs($this->user)->post("/appointments/{$this->appointment->id}/pay", [
+            'payment_method' => 'cash',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $this->appointment->id,
+            'payment_status' => 'paid',
+        ]);
+    }
+
+    public function test_appointment_pay_validation(): void
+    {
+        $this->actingAs($this->user)->post("/appointments/{$this->appointment->id}/pay", [])
+            ->assertSessionHasErrors('payment_method');
+    }
+
+    public function test_appointment_paypal_capture(): void
+    {
+        $this->actingAs($this->user)->postJson("/appointments/{$this->appointment->id}/paypal-capture", [
+            'order_id' => 'PAYPAL-ORDER-123',
+        ])->assertStatus(200)->assertJson(['status' => 'captured']);
     }
 }

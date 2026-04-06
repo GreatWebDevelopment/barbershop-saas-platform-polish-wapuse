@@ -133,7 +133,9 @@ const faqs = [
                         <span class="text-gray-500">/month</span>
                     </div>
                     <Link
-                        :href="route('register')"
+                        :href="plan.name === 'Enterprise'
+                            ? route('contact')
+                            : route('register') + '?plan=' + plan.name.toLowerCase() + '&billing=' + (annual ? 'annual' : 'monthly')"
                         class="w-full text-center py-3 rounded-lg font-semibold transition mb-8"
                         :class="plan.highlighted
                             ? 'bg-[#D4A853] text-[#0f0f1a] hover:bg-[#c09743]'
