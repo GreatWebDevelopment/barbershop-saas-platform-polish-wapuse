@@ -392,25 +392,14 @@ const footerLinks = [
     { title: 'Product', links: [
         { label: 'Features', route: route('features') },
         { label: 'Pricing', route: route('pricing') },
-        { label: 'Integrations', route: null },
-        { label: 'Mobile App', route: null },
     ]},
     { title: 'Company', links: [
         { label: 'About', route: route('about') },
-        { label: 'Blog', route: null },
-        { label: 'Careers', route: null },
-        { label: 'Press', route: null },
-    ]},
-    { title: 'Support', links: [
-        { label: 'Help Center', route: null },
         { label: 'Contact', route: route('contact') },
-        { label: 'Status', route: null },
-        { label: 'API Docs', route: null },
     ]},
     { title: 'Legal', links: [
         { label: 'Privacy', route: route('privacy') },
         { label: 'Terms', route: route('terms') },
-        { label: 'Security', route: null },
     ]},
 ];
 </script>
