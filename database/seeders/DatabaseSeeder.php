@@ -123,8 +123,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $statuses = ['completed', 'completed', 'completed', 'completed', 'completed', 'completed', 'cancelled', 'no-show', 'pending', 'confirmed'];
-        $paymentMethods = ['cash', 'cash', 'card', 'card', 'card', 'paypal'];
-        $paymentStatuses = ['paid', 'paid', 'paid', 'pending', 'refunded'];
 
         for ($i = 0; $i < 220; $i++) {
             $daysAgo = $i < 200 ? rand(1, 180) : rand(-14, -1);
@@ -134,9 +132,6 @@ class DatabaseSeeder extends Seeder
             $staff = $staffMembers[array_rand($staffMembers)];
 
             $status = $daysAgo > 0 ? $statuses[array_rand($statuses)] : (rand(0, 1) ? 'confirmed' : 'pending');
-
-            $paymentMethod = $paymentMethods[array_rand($paymentMethods)];
-            $paymentStatus = $status === 'completed' ? $paymentStatuses[array_rand($paymentStatuses)] : ($status === 'cancelled' ? 'refunded' : 'pending');
 
             Appointment::create([
                 'shop_id' => $shop->id,
@@ -149,8 +144,6 @@ class DatabaseSeeder extends Seeder
                 'price' => $service->price,
                 'is_walkin' => rand(0, 4) === 0,
                 'notes' => rand(0, 5) === 0 ? fake()->sentence() : null,
-                'payment_method' => $paymentMethod,
-                'payment_status' => $paymentStatus,
             ]);
         }
     }

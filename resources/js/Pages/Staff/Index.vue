@@ -140,7 +140,7 @@ const deleteStaff = (id) => {
 
 const parseSpecialties = (specialties) => {
     if (!specialties) return [];
-    if (Array.isArray(specialties)) return specialties;
+    if (Array.isArray(specialties)) return specialties.filter(Boolean);
     return specialties.split(',').map(s => s.trim()).filter(Boolean);
 };
 </script>

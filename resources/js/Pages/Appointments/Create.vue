@@ -79,18 +79,18 @@
 
                         <!-- Date/Time -->
                         <div>
-                            <label for="starts_at" class="block text-sm font-medium text-gray-300 mb-2">
+                            <label for="appointment_date" class="block text-sm font-medium text-gray-300 mb-2">
                                 Date & Time
                             </label>
                             <input
-                                id="starts_at"
-                                v-model="form.starts_at"
+                                id="appointment_date"
+                                v-model="form.appointment_date"
                                 type="datetime-local"
                                 class="w-full rounded-md border-gray-600 bg-[#1a1a2e] text-gray-100 focus:border-[#D4A853] focus:ring focus:ring-[#D4A853] focus:ring-opacity-50"
                                 required
                             />
-                            <div v-if="form.errors.starts_at" class="text-red-400 text-sm mt-1">
-                                {{ form.errors.starts_at }}
+                            <div v-if="form.errors.appointment_date" class="text-red-400 text-sm mt-1">
+                                {{ form.errors.appointment_date }}
                             </div>
                         </div>
 
@@ -118,12 +118,12 @@
                         <!-- Walk-in Checkbox -->
                         <div class="flex items-center">
                             <input
-                                id="is_walkin"
-                                v-model="form.is_walkin"
+                                id="is_walk_in"
+                                v-model="form.is_walk_in"
                                 type="checkbox"
                                 class="rounded border-gray-600 bg-[#1a1a2e] text-[#D4A853] focus:ring-[#D4A853] focus:ring-opacity-50"
                             />
-                            <label for="is_walkin" class="ml-2 block text-sm text-gray-300">
+                            <label for="is_walk_in" class="ml-2 block text-sm text-gray-300">
                                 Walk-in appointment
                             </label>
                         </div>
@@ -183,9 +183,9 @@ const form = useForm({
     customer_id: '',
     staff_id: '',
     service_id: '',
-    starts_at: '',
+    appointment_date: '',
     status: 'pending',
-    is_walkin: false,
+    is_walk_in: false,
     notes: ''
 });
 

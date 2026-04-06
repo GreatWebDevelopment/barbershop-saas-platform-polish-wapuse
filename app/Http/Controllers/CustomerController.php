@@ -4,20 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Customer::query()
-            ->addSelect([
-                'total_spend' => DB::table('appointments')
-                    ->selectRaw('COALESCE(SUM(price), 0)')
-                    ->whereColumn('customer_id', 'customers.id')
-                    ->where('status', 'completed'),
-            ]);
+        $query = Customer::query();
 
         if ($request->search) {
             $search = $request->search;
@@ -28,7 +21,7 @@ class CustomerController extends Controller
         }
 
         return Inertia::render('Customers/Index', [
-            'customers' => $query->orderBy('first_name')->paginate(18)->withQueryString(),
+            'customers' => $query->orderBy('first_name')->paginate(20)->withQueryString(),
             'filters' => $request->only(['search']),
         ]);
     }

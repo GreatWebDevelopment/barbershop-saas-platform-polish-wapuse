@@ -11,7 +11,7 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Service::with('category')->withCount('appointments');
+        $query = Service::with('category');
 
         if ($request->search) {
             $query->where('name', 'like', "%{$request->search}%");

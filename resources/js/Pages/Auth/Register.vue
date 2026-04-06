@@ -1,9 +1,7 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
@@ -24,116 +22,83 @@ const submit = () => {
     <GuestLayout>
         <Head title="Register" />
 
-        <div class="mb-6 text-center">
+        <div class="mb-8">
             <h2 class="text-2xl font-bold text-[#f5f0e8]">Create your account</h2>
+            <p class="mt-2 text-sm text-gray-400">Start managing your barbershop in minutes</p>
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-5">
             <div>
-                <InputLabel for="name" value="Name" class="text-[#f5f0e8]" />
-
-                <TextInput
+                <label for="name" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Shop name</label>
+                <input
                     id="name"
                     type="text"
-                    class="mt-1 block w-full bg-[#1a1a2e] border-gray-700 text-[#f5f0e8] focus:border-[#D4A853] focus:ring-[#D4A853]"
                     v-model="form.name"
                     required
                     autofocus
                     autocomplete="name"
+                    class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
+                    placeholder="Classic Cuts Barbershop"
                 />
-
-                <InputError class="mt-2 text-red-400" :message="form.errors.name" />
+                <InputError class="mt-1.5" :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" class="text-[#f5f0e8]" />
-
-                <TextInput
+            <div>
+                <label for="email" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Email</label>
+                <input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full bg-[#1a1a2e] border-gray-700 text-[#f5f0e8] focus:border-[#D4A853] focus:ring-[#D4A853]"
                     v-model="form.email"
                     required
                     autocomplete="username"
+                    class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
+                    placeholder="you@barbershop.com"
                 />
-
-                <InputError class="mt-2 text-red-400" :message="form.errors.email" />
+                <InputError class="mt-1.5" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" class="text-[#f5f0e8]" />
-
-                <TextInput
+            <div>
+                <label for="password" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Password</label>
+                <input
                     id="password"
                     type="password"
-                    class="mt-1 block w-full bg-[#1a1a2e] border-gray-700 text-[#f5f0e8] focus:border-[#D4A853] focus:ring-[#D4A853]"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
+                    class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
+                    placeholder="Min. 8 characters"
                 />
-
-                <InputError class="mt-2 text-red-400" :message="form.errors.password" />
+                <InputError class="mt-1.5" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                    class="text-[#f5f0e8]"
-                />
-
-                <TextInput
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Confirm password</label>
+                <input
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full bg-[#1a1a2e] border-gray-700 text-[#f5f0e8] focus:border-[#D4A853] focus:ring-[#D4A853]"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
+                    class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
+                    placeholder="Confirm your password"
                 />
-
-                <InputError
-                    class="mt-2 text-red-400"
-                    :message="form.errors.password_confirmation"
-                />
+                <InputError class="mt-1.5" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="mt-6 flex items-center justify-end">
-                <PrimaryButton
-                    class="w-full justify-center bg-[#D4A853] hover:bg-[#c09743] text-[#1a1a2e] font-semibold focus:ring-[#D4A853]"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
+            <PrimaryButton
+                class="w-full justify-center bg-[#D4A853] hover:bg-[#c09743] text-[#1a1a2e] font-semibold py-3 rounded-lg text-base focus:ring-[#D4A853] transition"
+                :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing"
+            >
+                Create account
+            </PrimaryButton>
 
-            <div class="mt-6 text-center">
-                <span class="text-sm text-gray-400">Already have an account? </span>
-                <Link
-                    :href="route('login')"
-                    class="text-sm text-[#D4A853] hover:text-[#f5f0e8] focus:outline-none focus:ring-2 focus:ring-[#D4A853] rounded-md transition duration-150 ease-in-out"
-                >
+            <p class="text-center text-sm text-gray-400">
+                Already have an account?
+                <Link :href="route('login')" class="text-[#D4A853] hover:text-[#f5f0e8] font-medium transition">
                     Sign in
                 </Link>
-            </div>
+            </p>
         </form>
     </GuestLayout>
 </template>
-
-<style scoped>
-/* Override default input styles for dark theme */
-:deep(input[type="text"]),
-:deep(input[type="email"]),
-:deep(input[type="password"]) {
-    background-color: #1a1a2e;
-    border-color: #374151;
-    color: #f5f0e8;
-}
-
-:deep(input[type="text"]:focus),
-:deep(input[type="email"]:focus),
-:deep(input[type="password"]:focus) {
-    border-color: #D4A853;
-    ring-color: #D4A853;
-}
-</style>

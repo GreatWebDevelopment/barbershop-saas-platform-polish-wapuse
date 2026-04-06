@@ -6,7 +6,6 @@ use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\Service;
 use App\Models\Staff;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,19 +25,9 @@ class AppointmentController extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->tab) {
-            $now = Carbon::now();
-            match ($request->tab) {
-                'today' => $query->whereDate('starts_at', $now->toDateString()),
-                'upcoming' => $query->where('starts_at', '>', $now),
-                'past' => $query->where('starts_at', '<', $now),
-                default => null,
-            };
-        }
-
         return Inertia::render('Appointments/Index', [
             'appointments' => $query->paginate(20)->withQueryString(),
-            'filters' => $request->only(['search', 'status', 'tab']),
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -61,22 +50,16 @@ class AppointmentController extends Controller
             'status' => 'required|in:pending,confirmed,completed,cancelled,no-show',
             'is_walkin' => 'boolean',
             'notes' => 'nullable|string',
-            'payment_method' => 'nullable|in:cash,card,paypal',
         ]);
 
         $service = Service::findOrFail($validated['service_id']);
-        $startsAt = Carbon::parse($validated['starts_at']);
-
-        $paymentMethod = $validated['payment_method'] ?? null;
-        unset($validated['payment_method']);
+        $startsAt = \Carbon\Carbon::parse($validated['starts_at']);
 
         Appointment::create([
             ...$validated,
             'shop_id' => 1,
             'price' => $service->price,
             'ends_at' => $startsAt->copy()->addMinutes($service->duration_minutes),
-            'payment_method' => $paymentMethod,
-            'payment_status' => $paymentMethod === 'cash' ? 'paid' : 'pending',
         ]);
 
         return redirect()->route('appointments.index')->with('success', 'Appointment created.');
@@ -104,20 +87,15 @@ class AppointmentController extends Controller
             'status' => 'required|in:pending,confirmed,completed,cancelled,no-show',
             'is_walkin' => 'boolean',
             'notes' => 'nullable|string',
-            'payment_method' => 'nullable|in:cash,card,paypal',
         ]);
 
         $service = Service::findOrFail($validated['service_id']);
-        $startsAt = Carbon::parse($validated['starts_at']);
-
-        $paymentMethod = $validated['payment_method'] ?? $appointment->payment_method;
-        unset($validated['payment_method']);
+        $startsAt = \Carbon\Carbon::parse($validated['starts_at']);
 
         $appointment->update([
             ...$validated,
             'price' => $service->price,
             'ends_at' => $startsAt->copy()->addMinutes($service->duration_minutes),
-            'payment_method' => $paymentMethod,
         ]);
 
         return redirect()->route('appointments.index')->with('success', 'Appointment updated.');

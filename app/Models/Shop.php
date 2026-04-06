@@ -11,9 +11,6 @@ class Shop extends Model
 
     protected $casts = [
         'hours' => 'array',
-        'payment_methods' => 'array',
-        'stripe_enabled' => 'boolean',
-        'paypal_enabled' => 'boolean',
     ];
 
     public function users(): HasMany
