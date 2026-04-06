@@ -1,6 +1,7 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
+import BarberPole from '@/Components/BarberPole.vue';
 </script>
 
 <template>
@@ -14,13 +15,17 @@ import { Link } from '@inertiajs/vue3';
             />
             <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a2e]/90 via-[#1a1a2e]/60 to-transparent"></div>
             <div class="relative z-10 flex flex-col justify-between p-12">
-                <Link href="/">
-                    <ApplicationLogo class="h-10 w-auto" />
+                <Link href="/" class="flex items-center gap-3">
+                    <BarberPole size="md" />
+                    <span class="text-xl font-bold text-white">Barber<span class="text-[#D4A853]">Pro</span></span>
                 </Link>
                 <div class="max-w-md">
-                    <h1 class="text-4xl font-bold text-white leading-tight mb-4">
-                        Run your barbershop like a pro
-                    </h1>
+                    <div class="flex items-start gap-4 mb-4">
+                        <BarberPole size="pole" class="hidden sm:block shrink-0 mt-1" />
+                        <h1 class="text-4xl font-bold text-white leading-tight">
+                            Run your barbershop like a pro
+                        </h1>
+                    </div>
                     <p class="text-lg text-white/80">
                         Scheduling, payments, staff management, and customer loyalty — all in one platform built for modern barbershops.
                     </p>

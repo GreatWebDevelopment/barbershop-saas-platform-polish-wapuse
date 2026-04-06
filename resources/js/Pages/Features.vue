@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import BarberPole from '@/Components/BarberPole.vue';
 
 const features = [
     {
@@ -55,9 +56,7 @@ const features = [
         <nav class="border-b border-white/5 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto flex items-center justify-between h-16">
                 <Link href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-[#D4A853] rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-[#0f0f1a]" fill="currentColor" viewBox="0 0 24 24"><path d="M13 5.5C13 3.57 11.43 2 9.5 2 7.57 2 6 3.57 6 5.5c0 .28.22.5.5.5s.5-.22.5-.5C7 4.12 8.12 3 9.5 3S12 4.12 12 5.5 10.88 8 9.5 8c-.28 0-.5.22-.5.5s.22.5.5.5c1.93 0 3.5-1.57 3.5-3.5z"/></svg>
-                    </div>
+                    <BarberPole size="md" />
                     <span class="text-lg font-bold text-white">Barber<span class="text-[#D4A853]">Pro</span></span>
                 </Link>
                 <div class="flex items-center gap-4">

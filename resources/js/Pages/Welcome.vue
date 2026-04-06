@@ -36,6 +36,12 @@
                 />
                 <div class="absolute inset-0 bg-gradient-to-r from-[#0f0f1a] via-[#0f0f1a]/85 to-[#0f0f1a]/60"></div>
             </div>
+            <!-- Decorative barber poles -->
+            <div class="hidden xl:block absolute right-12 top-24 bottom-0 z-10">
+                <div class="sticky top-32">
+                    <BarberPole size="tall" />
+                </div>
+            </div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
                 <div class="max-w-2xl">
                     <div class="inline-flex items-center gap-2 bg-[#D4A853]/15 border border-[#D4A853]/30 rounded-full px-4 py-1.5 mb-6">
