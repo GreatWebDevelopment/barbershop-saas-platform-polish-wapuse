@@ -44,7 +44,7 @@ const stats = [
                     <p class="text-lg text-gray-400">So he built something better. Today, BarberPro powers over 2,000 barbershops across the country, helping owners spend less time on admin and more time doing what they love — cutting hair.</p>
                 </div>
                 <div>
-                    <img src="https://images.unsplash.com/photo-1503951914875-452d3946e4ec?w=600&q=80" alt="Barbershop" class="rounded-2xl shadow-2xl shadow-black/50 w-full aspect-[4/3] object-cover" />
+                    <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80" alt="Barbershop" class="rounded-2xl shadow-2xl shadow-black/50 w-full aspect-[4/3] object-cover" />
                 </div>
             </div>
         </section>
