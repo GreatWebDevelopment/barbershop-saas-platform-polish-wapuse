@@ -445,23 +445,6 @@ class AppRoutesTest extends TestCase
         $this->get('/settings/payments')->assertRedirect('/login');
     }
 
-    public function test_update_stripe_settings(): void
-    {
-        $this->actingAs($this->user)->post('/settings/payments/stripe', [
-            'stripe_account_id' => 'acct_test123',
-            'stripe_enabled' => true,
-        ])->assertRedirect('/settings/payments');
-    }
-
-    public function test_update_paypal_settings(): void
-    {
-        $this->actingAs($this->user)->post('/settings/payments/paypal', [
-            'paypal_email' => 'pay@example.com',
-            'paypal_client_id' => 'client_123',
-            'paypal_enabled' => true,
-        ])->assertRedirect('/settings/payments');
-    }
-
     public function test_update_payment_methods(): void
     {
         $this->actingAs($this->user)->post('/settings/payments/methods', [
@@ -469,19 +452,119 @@ class AppRoutesTest extends TestCase
         ])->assertRedirect('/settings/payments');
     }
 
-    public function test_update_stripe_settings_validation(): void
+    // Stripe Connect OAuth
+    public function test_stripe_connect_redirects_to_stripe(): void
     {
-        $this->actingAs($this->user)->post('/settings/payments/stripe', [
-            'stripe_enabled' => 'not-a-bool',
-        ])->assertSessionHasErrors('stripe_enabled');
+        $this->actingAs($this->user)
+            ->get('/settings/payments/stripe/connect')
+            ->assertRedirect()
+            ->assertRedirectContains('connect.stripe.com');
     }
 
-    public function test_update_paypal_settings_validation(): void
+    public function test_stripe_connect_redirect_unauthenticated(): void
     {
-        $this->actingAs($this->user)->post('/settings/payments/paypal', [
-            'paypal_email' => 'not-an-email',
-            'paypal_enabled' => true,
-        ])->assertSessionHasErrors('paypal_email');
+        $this->get('/settings/payments/stripe/connect')->assertRedirect('/login');
+    }
+
+    public function test_stripe_callback_rejects_invalid_state(): void
+    {
+        $this->actingAs($this->user)
+            ->get('/settings/payments/stripe/callback?state=invalid&code=test')
+            ->assertRedirect('/settings/payments');
+    }
+
+    public function test_stripe_callback_handles_error_param(): void
+    {
+        $this->actingAs($this->user)
+            ->get('/settings/payments/stripe/callback?error=access_denied&error_description=Denied')
+            ->assertRedirect('/settings/payments');
+    }
+
+    public function test_stripe_disconnect(): void
+    {
+        $this->user->update([
+            'stripe_account_id' => 'acct_test123',
+            'stripe_connected_at' => now(),
+            'stripe_livemode' => false,
+        ]);
+
+        $this->actingAs($this->user)
+            ->post('/settings/payments/stripe/disconnect')
+            ->assertRedirect('/settings/payments');
+
+        $this->assertNull($this->user->fresh()->stripe_account_id);
+    }
+
+    public function test_stripe_disconnect_unauthenticated(): void
+    {
+        $this->post('/settings/payments/stripe/disconnect')->assertRedirect('/login');
+    }
+
+    // PayPal Connect OAuth
+    public function test_paypal_connect_redirect_unauthenticated(): void
+    {
+        $this->get('/settings/payments/paypal/connect')->assertRedirect('/login');
+    }
+
+    public function test_paypal_callback_without_merchant_id(): void
+    {
+        $this->actingAs($this->user)
+            ->get('/settings/payments/paypal/callback')
+            ->assertRedirect('/settings/payments');
+    }
+
+    public function test_paypal_callback_with_merchant_id(): void
+    {
+        $this->actingAs($this->user)
+            ->get('/settings/payments/paypal/callback?merchantIdInPayPal=MERCHANT123&permissionsGranted=true')
+            ->assertRedirect('/settings/payments');
+
+        $this->assertEquals('MERCHANT123', $this->user->fresh()->paypal_merchant_id);
+    }
+
+    public function test_paypal_disconnect(): void
+    {
+        $this->user->update([
+            'paypal_merchant_id' => 'MERCHANT123',
+            'paypal_connected_at' => now(),
+            'paypal_payments_receivable' => true,
+        ]);
+
+        $this->actingAs($this->user)
+            ->post('/settings/payments/paypal/disconnect')
+            ->assertRedirect('/settings/payments');
+
+        $this->assertNull($this->user->fresh()->paypal_merchant_id);
+    }
+
+    public function test_paypal_disconnect_unauthenticated(): void
+    {
+        $this->post('/settings/payments/paypal/disconnect')->assertRedirect('/login');
+    }
+
+    // Payment settings shows OAuth connection data
+    public function test_payment_settings_shows_stripe_connected(): void
+    {
+        $this->user->update([
+            'stripe_account_id' => 'acct_test456',
+            'stripe_connected_at' => now(),
+        ]);
+
+        $this->actingAs($this->user)
+            ->get('/settings/payments')
+            ->assertStatus(200);
+    }
+
+    public function test_payment_settings_shows_paypal_connected(): void
+    {
+        $this->user->update([
+            'paypal_merchant_id' => 'MERCH789',
+            'paypal_connected_at' => now(),
+        ]);
+
+        $this->actingAs($this->user)
+            ->get('/settings/payments')
+            ->assertStatus(200);
     }
 
     // Checkout

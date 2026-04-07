@@ -8,44 +8,26 @@ use Inertia\Inertia;
 
 class PaymentSettingsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $shop = Shop::firstOrFail();
+        $user = $request->user();
+        $shop = Shop::first();
 
         return Inertia::render('Settings/Payments', [
-            'shop' => $shop->only([
-                'id', 'stripe_account_id', 'stripe_enabled',
-                'paypal_email', 'paypal_client_id', 'paypal_enabled',
-                'payment_methods',
-            ]),
+            'stripe' => [
+                'connected' => (bool) $user->stripe_account_id,
+                'account_id' => $user->stripe_account_id,
+                'connected_at' => $user->stripe_connected_at?->toDateTimeString(),
+                'livemode' => (bool) $user->stripe_livemode,
+            ],
+            'paypal' => [
+                'connected' => (bool) $user->paypal_merchant_id,
+                'merchant_id' => $user->paypal_merchant_id,
+                'connected_at' => $user->paypal_connected_at?->toDateTimeString(),
+                'payments_receivable' => (bool) $user->paypal_payments_receivable,
+            ],
+            'shop' => $shop ? $shop->only(['id', 'payment_methods']) : ['id' => null, 'payment_methods' => []],
         ]);
-    }
-
-    public function updateStripe(Request $request)
-    {
-        $validated = $request->validate([
-            'stripe_account_id' => 'nullable|string|max:255',
-            'stripe_enabled' => 'boolean',
-        ]);
-
-        $shop = Shop::firstOrFail();
-        $shop->update($validated);
-
-        return redirect()->route('settings.payments')->with('success', 'Stripe settings updated.');
-    }
-
-    public function updatePaypal(Request $request)
-    {
-        $validated = $request->validate([
-            'paypal_email' => 'nullable|email|max:255',
-            'paypal_client_id' => 'nullable|string|max:255',
-            'paypal_enabled' => 'boolean',
-        ]);
-
-        $shop = Shop::firstOrFail();
-        $shop->update($validated);
-
-        return redirect()->route('settings.payments')->with('success', 'PayPal settings updated.');
     }
 
     public function updatePaymentMethods(Request $request)

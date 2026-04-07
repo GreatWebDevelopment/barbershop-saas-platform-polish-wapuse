@@ -5,7 +5,9 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSettingsController;
+use App\Http\Controllers\PayPalConnectController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripeConnectController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubscriptionController;
@@ -57,9 +59,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Payment Settings
     Route::get('/settings/payments', [PaymentSettingsController::class, 'index'])->name('settings.payments');
-    Route::post('/settings/payments/stripe', [PaymentSettingsController::class, 'updateStripe'])->name('settings.payments.stripe');
-    Route::post('/settings/payments/paypal', [PaymentSettingsController::class, 'updatePaypal'])->name('settings.payments.paypal');
     Route::post('/settings/payments/methods', [PaymentSettingsController::class, 'updatePaymentMethods'])->name('settings.payments.methods');
+
+    // Stripe Connect OAuth
+    Route::get('/settings/payments/stripe/connect', [StripeConnectController::class, 'redirect'])->name('settings.payments.stripe.connect');
+    Route::get('/settings/payments/stripe/callback', [StripeConnectController::class, 'callback'])->name('settings.payments.stripe.callback');
+    Route::post('/settings/payments/stripe/disconnect', [StripeConnectController::class, 'disconnect'])->name('settings.payments.stripe.disconnect');
+
+    // PayPal Connect OAuth
+    Route::get('/settings/payments/paypal/connect', [PayPalConnectController::class, 'redirect'])->name('settings.payments.paypal.connect');
+    Route::get('/settings/payments/paypal/callback', [PayPalConnectController::class, 'callback'])->name('settings.payments.paypal.callback');
+    Route::post('/settings/payments/paypal/disconnect', [PayPalConnectController::class, 'disconnect'])->name('settings.payments.paypal.disconnect');
 
     // Subscription / Checkout
     Route::get('/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');

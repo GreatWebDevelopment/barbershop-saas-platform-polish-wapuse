@@ -58,7 +58,7 @@ class SubscriptionController extends Controller
 
         $stripe = new \Stripe\StripeClient($stripeKey);
 
-        $session = $stripe->checkout->sessions->create([
+        $sessionParams = [
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
@@ -81,7 +81,19 @@ class SubscriptionController extends Controller
                 'plan' => $plan,
                 'billing' => $billing,
             ],
-        ]);
+        ];
+
+        // Use connected Stripe account for destination charges if available
+        $connectedAccountId = $request->user()->stripe_account_id;
+        if ($connectedAccountId) {
+            $sessionParams['payment_intent_data'] = [
+                'transfer_data' => [
+                    'destination' => $connectedAccountId,
+                ],
+            ];
+        }
+
+        $session = $stripe->checkout->sessions->create($sessionParams);
 
         Subscription::create([
             'user_id' => $request->user()->id,
@@ -117,11 +129,19 @@ class SubscriptionController extends Controller
             'payment_provider' => 'paypal',
         ]);
 
-        return response()->json([
+        $responseData = [
             'subscription_id' => $subscription->id,
             'amount' => number_format($price / 100, 2, '.', ''),
             'description' => "BarberPro {$planData['name']} Plan ({$billing})",
-        ]);
+        ];
+
+        // Include connected PayPal merchant as payee if available
+        $merchantId = $request->user()->paypal_merchant_id;
+        if ($merchantId) {
+            $responseData['payee'] = ['merchant_id' => $merchantId];
+        }
+
+        return response()->json($responseData);
     }
 
     public function capturePaypalOrder(Request $request)
