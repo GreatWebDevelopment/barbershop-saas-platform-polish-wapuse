@@ -64,8 +64,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class)->except(['show']);
 
     Route::middleware('role:owner,manager')->group(function () {
-        Route::resource('staff', StaffController::class)->except(['show']);
+        Route::resource('staff', StaffController::class);
         Route::resource('services', ServiceController::class)->except(['show']);
+    });
+
+    // Staff schedule & commissions (owner/manager can view any; stylists can view their own)
+    Route::middleware('role:owner,manager,stylist')->group(function () {
+        Route::get('/staff/{staff}/schedule', [StaffController::class, 'schedule'])->name('staff.schedule');
+        Route::patch('/staff/{staff}/schedule', [StaffController::class, 'updateSchedule'])->name('staff.schedule.update');
+        Route::get('/staff/{staff}/commissions', [StaffController::class, 'commissions'])->name('staff.commissions');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

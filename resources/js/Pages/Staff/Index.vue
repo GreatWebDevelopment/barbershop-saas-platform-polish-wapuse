@@ -83,6 +83,12 @@
                                 <!-- Actions -->
                                 <div class="flex space-x-2 pt-4 border-t border-gray-700">
                                     <Link
+                                        :href="route('staff.show', member.id)"
+                                        class="flex-1 text-center px-3 py-2 bg-[#1a1a2e] text-[#D4A853] text-sm font-medium rounded border border-[#D4A853]/30 hover:border-[#D4A853] transition"
+                                    >
+                                        View
+                                    </Link>
+                                    <Link
                                         :href="route('staff.edit', member.id)"
                                         class="flex-1 text-center px-3 py-2 bg-[#D4A853] text-gray-900 text-sm font-medium rounded hover:bg-[#c49742] transition"
                                     >

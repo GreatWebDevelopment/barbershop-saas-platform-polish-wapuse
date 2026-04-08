@@ -6,23 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            //
+            $table->string('photo_path')->nullable()->after('avatar_url');
+            $table->json('availability_schedule')->nullable()->after('specialties');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            //
+            $table->dropColumn(['photo_path', 'availability_schedule']);
         });
     }
 };
