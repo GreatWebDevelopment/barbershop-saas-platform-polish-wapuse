@@ -16,6 +16,7 @@ class Shop extends Model
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'queue_enabled' => 'boolean',
+        'loyalty_enabled' => 'boolean',
     ];
 
     public function getRouteKeyName(): string
@@ -61,6 +62,21 @@ class Shop extends Model
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function loyaltyRewards(): HasMany
+    {
+        return $this->hasMany(LoyaltyReward::class);
+    }
+
+    public function emailCampaigns(): HasMany
+    {
+        return $this->hasMany(EmailCampaign::class);
     }
 
     public function queueEntries(): HasMany

@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 
 class Customer extends Model
 {
-    use HasFactory, BelongsToShop;
+    use HasFactory, BelongsToShop, Notifiable;
 
     protected $guarded = [];
 
@@ -22,6 +23,21 @@ class Customer extends Model
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'referred_by_id');
+    }
+
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(Customer::class, 'referred_by_id');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 
     public function preferredStylist(): BelongsTo

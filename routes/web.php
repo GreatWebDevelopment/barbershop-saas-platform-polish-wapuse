@@ -16,6 +16,9 @@ use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\LoyaltySettingsController;
+use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -111,6 +114,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/checkout/paypal/create', [SubscriptionController::class, 'createPaypalOrder'])->name('subscription.paypal.create');
     Route::post('/checkout/paypal/capture', [SubscriptionController::class, 'capturePaypalOrder'])->name('subscription.paypal.capture');
     Route::get('/subscription/success', [SubscriptionController::class, 'success'])->name('subscription.success');
+
+    // Marketing: Reviews
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+
+    // Marketing: Campaigns
+    Route::get('/marketing/campaigns', [CampaignController::class, 'index'])->name('marketing.campaigns.index');
+    Route::get('/marketing/campaigns/create', [CampaignController::class, 'create'])->name('marketing.campaigns.create');
+    Route::post('/marketing/campaigns', [CampaignController::class, 'store'])->name('marketing.campaigns.store');
+    Route::post('/marketing/campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('marketing.campaigns.send');
+
+    // Settings: Loyalty (owner/manager)
+    Route::middleware('role:owner,manager')->group(function () {
+        Route::get('/settings/loyalty', [LoyaltySettingsController::class, 'edit'])->name('settings.loyalty');
+        Route::patch('/settings/loyalty', [LoyaltySettingsController::class, 'update'])->name('settings.loyalty.update');
+        Route::post('/settings/loyalty/rewards', [LoyaltySettingsController::class, 'storeReward'])->name('settings.loyalty.rewards.store');
+        Route::delete('/settings/loyalty/rewards/{reward}', [LoyaltySettingsController::class, 'destroyReward'])->name('settings.loyalty.rewards.destroy');
+    });
 
     // Appointment payments
     Route::post('/appointments/{appointment}/pay', [PaymentController::class, 'checkout'])->name('appointments.pay');
