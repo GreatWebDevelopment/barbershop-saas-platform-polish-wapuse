@@ -14,6 +14,10 @@ class Staff extends Model
     protected $table = 'staff';
     protected $guarded = [];
 
+    protected $casts = [
+        'specialties' => 'array',
+    ];
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
