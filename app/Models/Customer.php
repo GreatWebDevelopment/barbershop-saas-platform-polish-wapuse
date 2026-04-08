@@ -14,9 +14,19 @@ class Customer extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'last_visit_at' => 'datetime',
+        'total_spent' => 'decimal:2',
+    ];
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function preferredStylist(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class, 'preferred_stylist_id');
     }
 
     public function getFullNameAttribute(): string
