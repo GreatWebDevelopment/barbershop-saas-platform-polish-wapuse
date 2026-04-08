@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,15 +21,27 @@ class CustomerController extends Controller
                 ->orWhere('phone', 'like', "%{$search}%"));
         }
 
+        $sortField = $request->input('sort', 'first_name');
+        $sortDir = $request->input('direction', 'asc');
+        $allowedSorts = ['first_name', 'last_visit_at', 'total_spent', 'loyalty_points', 'visit_count'];
+
+        if (in_array($sortField, $allowedSorts)) {
+            $query->orderBy($sortField, $sortDir === 'desc' ? 'desc' : 'asc');
+        } else {
+            $query->orderBy('first_name');
+        }
+
         return Inertia::render('Customers/Index', [
-            'customers' => $query->orderBy('first_name')->paginate(20)->withQueryString(),
-            'filters' => $request->only(['search']),
+            'customers' => $query->paginate(24)->withQueryString(),
+            'filters' => $request->only(['search', 'sort', 'direction']),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Customers/Create');
+        return Inertia::render('Customers/Create', [
+            'staff' => Staff::where('status', 'active')->get(['id', 'name']),
+        ]);
     }
 
     public function store(Request $request)
@@ -39,6 +52,7 @@ class CustomerController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
+            'preferred_stylist_id' => 'nullable|exists:staff,id',
         ]);
 
         Customer::create($validated);
@@ -48,7 +62,14 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        return Inertia::render('Customers/Edit', ['customer' => $customer]);
+        $customer->load(['preferredStylist', 'appointments' => function ($q) {
+            $q->with(['staff', 'service'])->orderByDesc('starts_at')->limit(20);
+        }]);
+
+        return Inertia::render('Customers/Edit', [
+            'customer' => $customer,
+            'staff' => Staff::where('status', 'active')->get(['id', 'name']),
+        ]);
     }
 
     public function update(Request $request, Customer $customer)
@@ -59,6 +80,7 @@ class CustomerController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
+            'preferred_stylist_id' => 'nullable|exists:staff,id',
         ]);
 
         $customer->update($validated);

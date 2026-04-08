@@ -81,6 +81,21 @@
                             </div>
                         </div>
 
+                        <!-- Preferred Stylist -->
+                        <div>
+                            <label for="preferred_stylist_id" class="block text-sm font-medium text-gray-300 mb-2">
+                                Preferred Stylist
+                            </label>
+                            <select
+                                id="preferred_stylist_id"
+                                v-model="form.preferred_stylist_id"
+                                class="w-full rounded-md border-gray-600 bg-[#1a1a2e] text-gray-100 focus:border-[#D4A853] focus:ring focus:ring-[#D4A853] focus:ring-opacity-50"
+                            >
+                                <option :value="null">No preference</option>
+                                <option v-for="s in staff" :key="s.id" :value="s.id">{{ s.name }}</option>
+                            </select>
+                        </div>
+
                         <!-- Notes -->
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-300 mb-2">
@@ -125,12 +140,17 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
+defineProps({
+    staff: Array,
+});
+
 const form = useForm({
     first_name: '',
     last_name: '',
     email: '',
     phone: '',
-    notes: ''
+    notes: '',
+    preferred_stylist_id: null,
 });
 
 const submit = () => {
