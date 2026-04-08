@@ -4,6 +4,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+// Clear stale route cache that may contain absolute paths from build environment
+$routeCache = dirname(__DIR__).'/bootstrap/cache/routes-v7.php';
+if (file_exists($routeCache)) {
+    @unlink($routeCache);
+}
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
