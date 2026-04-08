@@ -24,4 +24,24 @@ class Staff extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function queueEntries(): HasMany
+    {
+        return $this->hasMany(QueueEntry::class);
+    }
+
+    public function currentQueueEntry(): BelongsTo
+    {
+        return $this->belongsTo(QueueEntry::class, 'current_queue_entry_id');
+    }
+
+    public function scopeOnDuty($query)
+    {
+        return $query->where('queue_status', 'active');
+    }
+
+    public function scopeAvailable($query)
+    {
+        return $query->where('queue_status', 'active')->whereNull('current_queue_entry_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Shop extends Model
@@ -11,7 +12,16 @@ class Shop extends Model
 
     protected $casts = [
         'hours' => 'array',
+        'amenities' => 'array',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
+        'queue_enabled' => 'boolean',
     ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function users(): HasMany
     {
@@ -21,6 +31,11 @@ class Shop extends Model
     public function staff(): HasMany
     {
         return $this->hasMany(Staff::class);
+    }
+
+    public function activeStaff(): HasMany
+    {
+        return $this->hasMany(Staff::class)->where('queue_status', 'active');
     }
 
     public function serviceCategories(): HasMany
@@ -41,5 +56,38 @@ class Shop extends Model
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function queueEntries(): HasMany
+    {
+        return $this->hasMany(QueueEntry::class);
+    }
+
+    public function activeQueue(): HasMany
+    {
+        return $this->hasMany(QueueEntry::class)->active()->orderBy('position');
+    }
+
+    public function waitingQueue(): HasMany
+    {
+        return $this->hasMany(QueueEntry::class)->waiting()->orderBy('position');
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        return collect([$this->address, $this->city, $this->state, $this->zip])
+            ->filter()->implode(', ');
+    }
+
+    public function scopeNearby($query, float $lat, float $lng, float $radiusMiles = 25)
+    {
+        $haversine = "(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
+
+        return $query
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->selectRaw("*, {$haversine} AS distance", [$lat, $lng, $lat])
+            ->having('distance', '<', $radiusMiles)
+            ->orderBy('distance');
     }
 }
