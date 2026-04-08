@@ -42,7 +42,7 @@ class StaffController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Staff::create([...$validated, 'shop_id' => 1]);
+        Staff::create($validated);
 
         return redirect()->route('staff.index')->with('success', 'Staff member added.');
     }

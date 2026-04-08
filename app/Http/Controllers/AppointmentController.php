@@ -57,7 +57,6 @@ class AppointmentController extends Controller
 
         Appointment::create([
             ...$validated,
-            'shop_id' => 1,
             'price' => $service->price,
             'ends_at' => $startsAt->copy()->addMinutes($service->duration_minutes),
         ]);

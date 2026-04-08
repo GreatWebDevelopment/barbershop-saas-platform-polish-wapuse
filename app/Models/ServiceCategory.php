@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToShop;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ServiceCategory extends Model
 {
-    protected $guarded = [];
+    use BelongsToShop;
 
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class);
-    }
+    protected $guarded = [];
 
     public function services(): HasMany
     {

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToShop;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Appointment extends Model
 {
+    use BelongsToShop;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -14,11 +17,6 @@ class Appointment extends Model
         'ends_at' => 'datetime',
         'is_walkin' => 'boolean',
     ];
-
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class);
-    }
 
     public function customer(): BelongsTo
     {

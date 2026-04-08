@@ -6,6 +6,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
+    shop_name: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -29,7 +30,7 @@ const submit = () => {
 
         <form @submit.prevent="submit" class="space-y-5">
             <div>
-                <label for="name" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Shop name</label>
+                <label for="name" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Your name</label>
                 <input
                     id="name"
                     type="text"
@@ -38,9 +39,23 @@ const submit = () => {
                     autofocus
                     autocomplete="name"
                     class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
-                    placeholder="Classic Cuts Barbershop"
+                    placeholder="John Smith"
                 />
                 <InputError class="mt-1.5" :message="form.errors.name" />
+            </div>
+
+            <div>
+                <label for="shop_name" class="block text-sm font-medium text-[#f5f0e8] mb-1.5">Shop name</label>
+                <input
+                    id="shop_name"
+                    type="text"
+                    v-model="form.shop_name"
+                    required
+                    autocomplete="organization"
+                    class="w-full rounded-lg border border-gray-700 bg-[#1a1a2e] px-4 py-3 text-[#f5f0e8] placeholder-gray-500 focus:border-[#D4A853] focus:ring-1 focus:ring-[#D4A853] transition"
+                    placeholder="Classic Cuts Barbershop"
+                />
+                <InputError class="mt-1.5" :message="form.errors.shop_name" />
             </div>
 
             <div>

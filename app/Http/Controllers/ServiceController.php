@@ -46,7 +46,7 @@ class ServiceController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Service::create([...$validated, 'shop_id' => 1]);
+        Service::create($validated);
 
         return redirect()->route('services.index')->with('success', 'Service created.');
     }

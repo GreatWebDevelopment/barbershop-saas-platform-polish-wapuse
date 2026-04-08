@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToShop;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class QueueEntry extends Model
 {
+    use BelongsToShop;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -16,11 +19,6 @@ class QueueEntry extends Model
         'service_started_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
-
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class);
-    }
 
     public function staff(): BelongsTo
     {

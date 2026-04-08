@@ -41,7 +41,7 @@ class CustomerController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Customer::create([...$validated, 'shop_id' => 1]);
+        Customer::create($validated);
 
         return redirect()->route('customers.index')->with('success', 'Customer added.');
     }

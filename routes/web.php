@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentSettingsController;
 use App\Http\Controllers\PayPalConnectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueueController;
+use App\Http\Controllers\ShopSettingsController;
 use App\Http\Controllers\StripeConnectController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
@@ -60,13 +61,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/company', [CompanyDashboardController::class, 'index'])->name('company.dashboard');
 
     Route::resource('appointments', AppointmentController::class)->except(['show']);
-    Route::resource('staff', StaffController::class)->except(['show']);
-    Route::resource('services', ServiceController::class)->except(['show']);
     Route::resource('customers', CustomerController::class)->except(['show']);
+
+    Route::middleware('role:owner,manager')->group(function () {
+        Route::resource('staff', StaffController::class)->except(['show']);
+        Route::resource('services', ServiceController::class)->except(['show']);
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Shop Settings (owner/manager only)
+    Route::middleware('role:owner,manager')->group(function () {
+        Route::get('/settings/shop', [ShopSettingsController::class, 'edit'])->name('settings.shop');
+        Route::patch('/settings/shop', [ShopSettingsController::class, 'update'])->name('settings.shop.update');
+    });
 
     // Payment Settings
     Route::get('/settings/payments', [PaymentSettingsController::class, 'index'])->name('settings.payments');
