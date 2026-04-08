@@ -102,6 +102,37 @@ const showingNavigationDropdown = ref(false);
                                 </li>
                                 <li>
                                     <NavLink
+                                        :href="route('locations.index')"
+                                        :active="route().current('locations.*')"
+                                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                        :class="route().current('locations.*')
+                                            ? 'bg-[#D4A853] text-[#1a1a2e]'
+                                            : 'text-[#f5f0e8] hover:text-[#D4A853] hover:bg-[#16162a]'"
+                                    >
+                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                        </svg>
+                                        Locations
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        :href="route('company.dashboard')"
+                                        :active="route().current('company.*')"
+                                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                        :class="route().current('company.*')
+                                            ? 'bg-[#D4A853] text-[#1a1a2e]'
+                                            : 'text-[#f5f0e8] hover:text-[#D4A853] hover:bg-[#16162a]'"
+                                    >
+                                        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5M3.75 3v18m16.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                                        </svg>
+                                        Company
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
                                         :href="route('settings.payments')"
                                         :active="route().current('settings.payments*')"
                                         class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"

@@ -146,5 +146,8 @@ class DatabaseSeeder extends Seeder
                 'notes' => rand(0, 5) === 0 ? fake()->sentence() : null,
             ]);
         }
+
+        // Run enterprise multi-location seeder
+        $this->call(EnterpriseSeeder::class);
     }
 }
