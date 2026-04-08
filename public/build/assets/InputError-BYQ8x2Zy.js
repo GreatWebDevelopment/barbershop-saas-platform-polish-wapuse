@@ -1,1 +1,0 @@
-import{k as e,l as t,o as n,rt as r,x as i}from"./runtime-core.esm-bundler-D3cqJJLi.js";import{u as a}from"./app-IFtZ6iX1.js";var o={class:`text-sm text-red-600`},s={__name:`InputError`,props:{message:{type:String}},setup(s){return(c,l)=>e((i(),t(`div`,null,[n(`p`,o,r(s.message),1)],512)),[[a,s.message]])}};export{s as t};
