@@ -22,6 +22,10 @@ use App\Http\Controllers\CampaignController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('/up', function () {
+    return response('OK', 200);
+});
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });
