@@ -19,9 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->validateCsrfTokens(except: [
-            'webhook/*',
-        ]);
+        $except = ['webhook/*'];
+
+        // Disable CSRF in testing environment
+        if ($_ENV['APP_ENV'] ?? null === 'testing') {
+            $except[] = '*';
+        }
+
+        $middleware->validateCsrfTokens(except: $except);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,

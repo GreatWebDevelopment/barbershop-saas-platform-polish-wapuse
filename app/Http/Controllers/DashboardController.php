@@ -121,22 +121,31 @@ class DashboardController extends Controller
         // 7 days x hours (7am-9pm)
         $heatmapData = [];
         $dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        $appointmentCounts = Appointment::whereIn('status', ['completed', 'confirmed', 'pending'])
+
+        // Use database-agnostic approach instead of MySQL-specific DAYOFWEEK
+        $appointments = Appointment::whereIn('status', ['completed', 'confirmed', 'pending'])
             ->where('starts_at', '>=', Carbon::now()->subWeeks(4))
-            ->select(
-                DB::raw('DAYOFWEEK(starts_at) as dow'),
-                DB::raw('HOUR(starts_at) as hour'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('dow', 'hour')
+            ->select('starts_at')
             ->get();
+
+        $appointmentCounts = collect();
+        foreach ($appointments as $apt) {
+            $date = Carbon::parse($apt->starts_at);
+            $dow = $date->dayOfWeekIso; // 1=Mon, 7=Sun
+            $hour = $date->hour;
+
+            $key = "{$dow}_{$hour}";
+            if (!$appointmentCounts->has($key)) {
+                $appointmentCounts->put($key, (object)['dow' => $dow, 'hour' => $hour, 'count' => 0]);
+            }
+            $appointmentCounts->get($key)->count++;
+        }
 
         foreach ($dayNames as $dayIndex => $dayName) {
             $dayData = [];
             for ($h = 7; $h <= 21; $h++) {
-                // MySQL DAYOFWEEK: 1=Sun,2=Mon...7=Sat -> convert
-                $mysqlDow = (($dayIndex + 1) % 7) + 1;
-                $match = $appointmentCounts->first(fn ($r) => $r->dow == $mysqlDow && $r->hour == $h);
+                $dow = $dayIndex + 1; // 1=Mon, 7=Sun
+                $match = $appointmentCounts->get("{$dow}_{$h}");
                 $dayData[] = $match ? $match->count : 0;
             }
             $heatmapData[] = [

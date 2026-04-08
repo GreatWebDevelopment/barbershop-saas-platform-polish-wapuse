@@ -17,8 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // === Demo Shop ===
-        $shop = Shop::create([
-            'name' => 'Classic Cuts & Co.',
+        $shop = Shop::firstOrCreate(['name' => 'Classic Cuts & Co.'], [
             'address' => '123 Main Street',
             'city' => 'Austin',
             'state' => 'TX',
@@ -35,6 +34,12 @@ class DatabaseSeeder extends Seeder
                 'sunday' => 'Closed',
             ],
         ]);
+
+        // If shop already had data, skip re-seeding to avoid duplicates
+        if ($shop->wasRecentlyCreated === false) {
+            $this->command->info('Demo data already exists, skipping.');
+            return;
+        }
 
         // === Owner Account ===
         User::factory()->create([

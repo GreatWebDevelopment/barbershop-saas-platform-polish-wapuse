@@ -284,6 +284,7 @@ class AppRoutesTest extends TestCase
             'price' => 25,
             'duration_minutes' => 20,
             'status' => 'active',
+            'skill_level' => 'intermediate',
         ])->assertRedirect('/services');
 
         $this->assertDatabaseHas('services', ['name' => 'New Service']);
@@ -311,6 +312,7 @@ class AppRoutesTest extends TestCase
             'price' => 35,
             'duration_minutes' => 25,
             'status' => 'active',
+            'skill_level' => 'intermediate',
         ])->assertRedirect('/services');
     }
 
