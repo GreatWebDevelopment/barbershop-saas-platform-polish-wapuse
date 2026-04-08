@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CompanyDashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSettingsController;
 use App\Http\Controllers\PayPalConnectController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QueueController;
 use App\Http\Controllers\StripeConnectController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
@@ -42,11 +45,19 @@ Route::get('/terms', function () {
     return Inertia::render('Terms');
 })->name('terms');
 
+// Public: Locations & Queue
+Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+Route::get('/locations/{shop}', [LocationController::class, 'show'])->name('locations.show');
+Route::get('/queue/check-in/{shop}', [QueueController::class, 'checkIn'])->name('queue.checkin');
+Route::get('/queue/status/{queueNumber}', [QueueController::class, 'status'])->name('queue.status');
+Route::get('/display/{shop}', [QueueController::class, 'display'])->name('queue.display');
+
 // Subscription webhook (no auth, no CSRF)
 Route::post('/webhook/stripe', [SubscriptionController::class, 'webhook'])->name('subscription.webhook');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/company', [CompanyDashboardController::class, 'index'])->name('company.dashboard');
 
     Route::resource('appointments', AppointmentController::class)->except(['show']);
     Route::resource('staff', StaffController::class)->except(['show']);
