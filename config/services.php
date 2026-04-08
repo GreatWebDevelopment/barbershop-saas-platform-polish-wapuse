@@ -49,4 +49,19 @@ return [
         ],
     ],
 
+    'google' => [
+        'maps_key' => env('VITE_GOOGLE_MAPS_API_KEY'),
+    ],
+
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_TOKEN'),
+        'from' => env('TWILIO_FROM'),
+    ],
+
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
 ];
