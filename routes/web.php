@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\ShopSettingsController;
 use App\Http\Controllers\StripeConnectController;
+use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubscriptionController;
@@ -66,6 +67,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:owner,manager')->group(function () {
         Route::resource('staff', StaffController::class);
         Route::resource('services', ServiceController::class)->except(['show']);
+        Route::post('services/reorder', [ServiceController::class, 'reorder'])->name('services.reorder');
+        Route::resource('service-categories', ServiceCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     });
 
     // Staff schedule & commissions (owner/manager can view any; stylists can view their own)

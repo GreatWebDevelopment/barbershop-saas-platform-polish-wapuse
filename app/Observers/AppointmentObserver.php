@@ -16,6 +16,11 @@ class AppointmentObserver
             return;
         }
 
+        // Increment service booking count
+        if ($appointment->service) {
+            $appointment->service->increment('booking_count');
+        }
+
         $customer = $appointment->customer;
         if (!$customer) {
             return;
