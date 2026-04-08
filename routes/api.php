@@ -10,6 +10,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/locations/nearby', [LocationController::class, 'nearby']);
     Route::get('/locations/{shop}', [LocationController::class, 'show']);
 
+    // Booking / Availability
+    Route::get('/availability/{shop}', [\App\Http\Controllers\BookingController::class, 'availability']);
+    Route::post('/book/{shop}', [\App\Http\Controllers\BookingController::class, 'store']);
+
     Route::post('/queue/check-in', [QueueController::class, 'checkIn']);
     Route::get('/queue/{queueNumber}', [QueueController::class, 'status']);
     Route::delete('/queue/{queueNumber}', [QueueController::class, 'cancel']);

@@ -16,6 +16,8 @@ class Appointment extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'is_walkin' => 'boolean',
+        'booked_online' => 'boolean',
+        'recurrence_end_date' => 'date',
     ];
 
     public function customer(): BelongsTo

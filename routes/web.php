@@ -47,6 +47,9 @@ Route::get('/terms', function () {
     return Inertia::render('Terms');
 })->name('terms');
 
+// Public: Online Booking
+Route::get('/book/{shop:slug}', [App\Http\Controllers\BookingController::class, 'index'])->name('booking.index');
+
 // Public: Locations & Queue
 Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
 Route::get('/locations/{shop}', [LocationController::class, 'show'])->name('locations.show');
