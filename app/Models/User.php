@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'shop_id', 'role', 'stripe_account_id', 'stripe_connected_at', 'stripe_livemode', 'paypal_merchant_id', 'paypal_connected_at', 'paypal_payments_receivable'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     public function shop(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

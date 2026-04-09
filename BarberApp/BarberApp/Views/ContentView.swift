@@ -1,7 +1,9 @@
 import SwiftUI
 import MapKit
 
-struct ContentView: View {
+// MARK: - Main Tab View
+struct MainTabView: View {
+    @EnvironmentObject var auth: AuthManager
     @EnvironmentObject var appState: AppState
     @State private var selectedTab = 0
 
@@ -9,23 +11,31 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             LocationsView()
                 .tabItem {
-                    Label("Locations", systemImage: "mappin.circle.fill")
+                    Label("Explore", systemImage: "mappin.circle.fill")
                 }
                 .tag(0)
 
             if let entry = appState.currentQueueEntry {
                 QueueStatusView(queueNumber: entry.queueNumber)
                     .tabItem {
-                        Label("My Queue", systemImage: "person.line.dotted.person.fill")
+                        Label("Queue", systemImage: "person.line.dotted.person.fill")
                     }
                     .tag(1)
             }
 
-            ProfileView()
+            if auth.isAuthenticated {
+                AppointmentsView()
+                    .tabItem {
+                        Label("Bookings", systemImage: "calendar")
+                    }
+                    .tag(2)
+            }
+
+            ProfileDetailView()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle")
                 }
-                .tag(2)
+                .tag(3)
         }
         .tint(Color(hex: "D4A853"))
     }
@@ -45,7 +55,6 @@ struct LocationsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Toggle map/list
                 Picker("View", selection: $showMap) {
                     Text("Map").tag(true)
                     Text("List").tag(false)
@@ -128,7 +137,6 @@ struct LocationRow: View {
 // MARK: - Location Detail
 struct LocationDetailView: View {
     let shop: Shop
-    @State private var navigateToCheckIn = false
 
     var body: some View {
         ScrollView {
@@ -149,6 +157,19 @@ struct LocationDetailView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color(hex: "D4A853"))
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
+
+                // Book Appointment Button
+                NavigationLink(destination: BookingView(shop: shop)) {
+                    Text("Book Appointment")
+                        .font(.headline).bold()
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(hex: "1a1a2e"))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "D4A853"), lineWidth: 2))
                         .cornerRadius(12)
                 }
                 .padding(.horizontal)
@@ -203,7 +224,6 @@ struct CheckInView: View {
         ScrollView {
             VStack(spacing: 24) {
                 if let result = result {
-                    // Success
                     VStack(spacing: 16) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 60))
@@ -229,7 +249,6 @@ struct CheckInView: View {
                     .background(Color(hex: "1a1a2e"))
                     .cornerRadius(16)
                 } else {
-                    // Form
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Your Name")
                             .font(.subheadline).foregroundColor(.gray)
@@ -358,6 +377,8 @@ struct StatusBadge: View {
         case "called": return ("Your Turn!", .green)
         case "in_service": return ("In Service", .blue)
         case "completed": return ("Done", .gray)
+        case "scheduled": return ("Scheduled", .blue)
+        case "cancelled": return ("Cancelled", .red)
         default: return (status.capitalized, .gray)
         }
     }
@@ -370,27 +391,6 @@ struct StatusBadge: View {
             .padding(.vertical, 10)
             .background(config.1.opacity(0.15))
             .cornerRadius(20)
-    }
-}
-
-// MARK: - Profile View
-struct ProfileView: View {
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(Color(hex: "D4A853"))
-                Text("Guest User")
-                    .font(.title2).bold()
-                    .foregroundColor(.white)
-                Text("Sign in to save your preferences")
-                    .foregroundColor(.gray)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(hex: "0f0f1a"))
-            .navigationTitle("Profile")
-        }
     }
 }
 

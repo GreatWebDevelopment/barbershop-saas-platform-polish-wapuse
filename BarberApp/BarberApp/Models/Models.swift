@@ -109,3 +109,164 @@ struct QueueStatusResponse: Codable {
         case estimatedWaitMinutes = "estimated_wait_minutes"
     }
 }
+
+// MARK: - Auth & User Models
+
+struct AppUser: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let email: String
+    let phoneNumber: String?
+    let role: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, email, role
+        case phoneNumber = "phone_number"
+    }
+}
+
+struct AuthResponse: Codable {
+    let user: AppUser
+    let token: String
+}
+
+struct UserResponse: Codable {
+    let user: AppUser
+}
+
+struct EmptyResponse: Codable {}
+
+// MARK: - Appointment Models
+
+struct Appointment: Codable, Identifiable {
+    let id: Int
+    let shopId: Int
+    let staffId: Int
+    let serviceId: Int
+    let startsAt: String
+    let endsAt: String
+    let status: String
+    let price: String?
+    let staff: Staff?
+    let service: Service?
+    let shop: Shop?
+
+    enum CodingKeys: String, CodingKey {
+        case id, status, price, staff, service, shop
+        case shopId = "shop_id"
+        case staffId = "staff_id"
+        case serviceId = "service_id"
+        case startsAt = "starts_at"
+        case endsAt = "ends_at"
+    }
+
+    var startsAtDate: Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter.date(from: startsAt) ?? {
+            let f = DateFormatter()
+            f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+            return f.date(from: startsAt)
+        }()
+    }
+}
+
+struct AppointmentsResponse: Codable {
+    let appointments: [Appointment]
+}
+
+// MARK: - Service & Staff Detail Models
+
+struct ServicesResponse: Codable {
+    let services: [ServiceDetail]
+}
+
+struct ServiceDetail: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let description: String?
+    let price: String
+    let durationMinutes: Int
+    let category: ServiceCategory?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, description, price, category
+        case durationMinutes = "duration_minutes"
+    }
+}
+
+struct ServiceCategory: Codable, Identifiable {
+    let id: Int
+    let name: String
+}
+
+struct StaffListResponse: Codable {
+    let staff: [StaffMember]
+}
+
+struct StaffMember: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let title: String?
+    let avatarUrl: String?
+    let specialties: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, title, specialties
+        case avatarUrl = "avatar_url"
+    }
+}
+
+// MARK: - Booking Models
+
+struct SlotsResponse: Codable {
+    let slots: [String]
+}
+
+struct BookingResponse: Codable {
+    let message: String
+    let appointment: Appointment
+}
+
+// MARK: - Loyalty Models
+
+struct LoyaltyResponse: Codable {
+    let customers: [LoyaltyCustomer]
+    let rewards: [LoyaltyReward]
+    let totalPoints: Int
+
+    enum CodingKeys: String, CodingKey {
+        case customers, rewards
+        case totalPoints = "total_points"
+    }
+}
+
+struct LoyaltyCustomer: Codable, Identifiable {
+    let id: Int
+    let shopId: Int
+    let loyaltyPoints: Int?
+    let totalSpent: String?
+    let firstName: String
+    let lastName: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case shopId = "shop_id"
+        case loyaltyPoints = "loyalty_points"
+        case totalSpent = "total_spent"
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
+}
+
+struct LoyaltyReward: Codable, Identifiable {
+    let id: Int
+    let name: String?
+    let description: String?
+    let pointsCost: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, description
+        case pointsCost = "points_cost"
+    }
+}

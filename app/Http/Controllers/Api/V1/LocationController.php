@@ -47,4 +47,24 @@ class LocationController extends Controller
             'queue' => $this->queueService->getQueueStatus($shop),
         ]);
     }
+
+    public function services(Shop $shop): JsonResponse
+    {
+        $services = $shop->services()
+            ->where('status', 'active')
+            ->with('category:id,name')
+            ->orderBy('sort_order')
+            ->get(['id', 'name', 'description', 'price', 'duration_minutes', 'service_category_id', 'sort_order']);
+
+        return response()->json(['services' => $services]);
+    }
+
+    public function staff(Shop $shop): JsonResponse
+    {
+        $staff = $shop->staff()
+            ->where('status', 'active')
+            ->get(['id', 'name', 'title', 'avatar_url', 'specialties']);
+
+        return response()->json(['staff' => $staff]);
+    }
 }
